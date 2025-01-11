@@ -1,15 +1,23 @@
 from pygame import*
+from random import randint
 
 mixer.init()
 mixer.music.load('background_music.ogg')
 mixer.music.play()
 fire_sound = mixer.Sound('shoot_sound.ogg')
 
+font.init()
+font2 = font.Font(None, 36)
+
 img_back = 'background_street.png'
 img_hero = 'guy.png'
+img_enemy = 'zombie.png'
 
 clock = time.Clock()
 FPS = 60
+
+score = 0
+lost = 0
 
 class GameSprite(sprite.Sprite):
     def __init__(
@@ -47,8 +55,17 @@ class Player(GameSprite):
     # метод "постріл" (використовуємо місце гравця, щоб створити там кулю)
     def fire(self):
         pass
- 
- 
+
+class Enemy(GameSprite):
+    def update(self):
+        self.rect.y += self.speed
+        global lost
+
+        if self.rect.y > win_height:
+            self.rect.x = randint(80, win_width - 80)
+            self.rect.y = 0
+            lost = lost + 1
+
 # створюємо віконце
 win_width = 700
 win_height = 700
@@ -59,6 +76,11 @@ background = transform.scale(image.load(img_back), (win_width, win_height))
 # створюємо спрайти
 ship = Player(img_hero, 5, win_height - 100, 80, 100, 10)
  
+monsters = sprite.Group()
+for i in range(1, 6):
+    monster = Enemy(img_enemy, randint(
+        80, win_width - 80), -40, 120, 120, randint(1, 3))
+    monsters.add(monster)
 # змінна "гра закінчилася": як тільки вона стає True, в основному циклі перестають працювати спрайти
 finish = False
  
@@ -75,11 +97,19 @@ while run:
         # оновлюємо фон
         window.blit(background, (0, 0))
  
+        text = font2.render('Рахунок:' + str(score), 1, (255,255,255))
+        window.blit(text, (10, 20))
+
+        text_lose = font2.render('Пропущено:' + str(lost), 1, (255,255,255))
+        window.blit(text, (10, 50))
+
         # рухи спрайтів
         ship.update()
+        monsters.update()
  
         # оновлюємо їх у новому місці при кожній ітерації циклу
         ship.reset()
+        monsters.draw(window)
  
     display.update()
     clock.tick(FPS)
