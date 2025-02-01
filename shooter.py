@@ -2,10 +2,14 @@ from pygame import*
 from random import randint
 import time as pytime
 
+path_music = "assets\\sounds\\background_music.ogg"
+
+shut_sound = "assets\\sounds\\shoot_sound.ogg"
+
 mixer.init()
-mixer.music.load('background_music.ogg')
+mixer.music.load(path_music)
 mixer.music.play()
-fire_sound = mixer.Sound('shoot_sound.ogg')
+fire_sound = mixer.Sound(shut_sound)
 
 font.init()
 font1 = font.Font(None, 80)
@@ -13,17 +17,17 @@ font2 = font.Font(None, 36)
 win = font1.render("YOU WIN!", True, (255,255,255))
 lose = font1.render("YOU LOSE!", True, (180,0,0))
 
-img_back = 'background_street.png'
-img_hero = 'guy.png'
-img_enemy = 'zombie.png'
-img_bullet = 'bullet.png'
+img_back = 'assets\\pictures\\background_street.png'
+img_hero = 'assets\\pictures\\guy.png'
+img_enemy = 'assets\\pictures\\zombie.png'
+img_bullet = 'assets\\pictures\\bullet.png'
 
 clock = time.Clock()
-FPS = 60
+FPS = 30
 
 score = 0
 lost = 0
-goal = 0 
+goal = 50 
 max_lost = 3
 life = 3
 bullet_count = 10
@@ -97,7 +101,7 @@ ship = Player(img_hero, 5, win_height - 100, 80, 100, 10)
 monsters = sprite.Group()
 for i in range(1, 6):
     monster = Enemy(img_enemy, randint(
-        80, win_width - 80), -40, 120, 120, randint(1, 3))
+        80, win_width - 80), -40, 80, 50, randint(1, 3))
     monsters.add(monster)
     
 bullets = sprite.Group()
@@ -128,7 +132,7 @@ while run:
         window.blit(text, (10, 20))
 
         text_lose = font2.render('Пропущено:' + str(lost), 1, (255,255,255))
-        window.blit(text, (10, 50))
+        window.blit(text_lose, (10, 50))
 
         # рухи спрайтів
         ship.update()
@@ -176,7 +180,7 @@ while run:
         if score >= goal:
             finish = True
             mixer.music.stop()
-            window.blit(lose, (200, 200))
+            window.blit(win, (200, 200))
 
     display.update()
-    clock.tick(FPS)
+    clock.tick(FPS) 
